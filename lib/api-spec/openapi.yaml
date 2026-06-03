@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: status
+    description: Bot status
 paths:
   /healthz:
     get:
@@ -24,6 +26,19 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /status:
+    get:
+      operationId: getBotStatus
+      tags: [status]
+      summary: Get bot status
+      description: Returns current bot and server status information
+      responses:
+        "200":
+          description: Bot status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BotStatus"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +48,23 @@ components:
           type: string
       required:
         - status
-
+    BotStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          description: "online or offline"
+        botName:
+          type: string
+        model:
+          type: string
+        uptimeSeconds:
+          type: number
+        startedAt:
+          type: string
+      required:
+        - status
+        - botName
+        - model
+        - uptimeSeconds
+        - startedAt
