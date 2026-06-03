@@ -29,13 +29,8 @@ for (const [key, val] of [
   }
 }
 
-const GATEWAY_TOKEN = process.env.SESSION_SECRET || "openclaw-static-token";
-
 const config = {
-  gateway: {
-    mode: "local",
-    auth: { mode: "token", token: GATEWAY_TOKEN },
-  },
+  gateway: { mode: "local" },
   agents: {
     defaults: {
       workspace: workspaceDir,
@@ -90,9 +85,16 @@ const config = {
   },
 };
 
-// Write resolved config
+// Write resolved config (bot config)
 const resolvedPath = join(configDir, "openclaw.resolved.json");
 writeFileSync(resolvedPath, JSON.stringify(config, null, 2));
+
+// Write auth token to openclaw.json (CLI config — gateway reads auth from here)
+const GATEWAY_TOKEN = process.env.SESSION_SECRET || "openclaw-gateway-token";
+const cliConfig = {
+  gateway: { auth: { mode: "token", token: GATEWAY_TOKEN } },
+};
+writeFileSync(configPath, JSON.stringify(cliConfig, null, 2));
 
 console.log("✅ OpenClaw config resolved");
 console.log("🤖 Starting OpenClaw gateway...");
@@ -104,10 +106,13 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const openclawBin = join(__dirname, "../node_modules/openclaw/openclaw.mjs");
 
 // Start openclaw gateway with resolved config
+// OPENCLAW_PACKAGED_COMPILE_CACHE_RESPAWNED=1 skips the extra compile-cache
+// respawn that openclaw normally does on cold start (saves ~5 min startup delay)
 const openclaw = spawn("node", [openclawBin, "gateway"], {
   env: {
     ...process.env,
     OPENCLAW_CONFIG_PATH: resolvedPath,
+    OPENCLAW_PACKAGED_COMPILE_CACHE_RESPAWNED: "1",
   },
   stdio: "inherit",
 });
