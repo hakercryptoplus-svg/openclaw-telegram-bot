@@ -35,7 +35,7 @@ app.use("/api", router);
 if (process.env.NODE_ENV === "production") {
   const staticDir = join(process.cwd(), "artifacts/bot-dashboard/dist/public");
   app.use(express.static(staticDir));
-  app.get("*", (_req, res) => {
+  app.get("/{*splat}", (_req, res) => {
     res.sendFile(join(staticDir, "index.html"));
   });
 }
