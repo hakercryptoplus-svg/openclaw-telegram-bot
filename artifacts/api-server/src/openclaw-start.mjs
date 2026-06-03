@@ -29,8 +29,13 @@ for (const [key, val] of [
   }
 }
 
+const GATEWAY_TOKEN = process.env.SESSION_SECRET || "openclaw-static-token";
+
 const config = {
-  gateway: { mode: "local" },
+  gateway: {
+    mode: "local",
+    auth: { mode: "token", token: GATEWAY_TOKEN },
+  },
   agents: {
     defaults: {
       workspace: workspaceDir,
