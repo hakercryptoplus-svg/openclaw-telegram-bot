@@ -5,7 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 
 export default function Home() {
   const queryClient = useQueryClient();
-  const { data: status, isLoading, isError, isFetching } = useGetBotStatus({}, { query: { refetchInterval: 10000 } });
+  const { data: status, isLoading, isError, isFetching } = useGetBotStatus({ query: { queryKey: getGetBotStatusQueryKey(), refetchInterval: 10000 } });
 
   const isOnline = status?.status?.toLowerCase() === 'online';
 
